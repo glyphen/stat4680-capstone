@@ -1,0 +1,52 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(rpart)
+```
+
+
+```{r}
+PrecolData <- read.csv('Cleaned_Data.csv')
+```
+
+```{r}
+PrecolData
+```
+['SID', 'res', 'type', 'IUT', 'TransferHrs', 'hc_satv', 'hc_satm',
+       'hc_satt', 'HC_SAT_New_Math', 'HC_SAT_New_EBRW', 'HC_SAT_New_Total',
+       'hc_acte', 'hc_actm', 'hc_actc', 'AP_Calc_AB', 'AP_Calc_BC',
+       'HS_Calc_units', 'HS_Physics_units', 'cc_hsgpa', 'cc_hsrnk', 'hs1cnty',
+       'hs1state', 'First_EN_Class', 'First_EN_Term', 'First_EN_Major',
+       'DegCol', 'DegMaj', 'DegTermc', 'DegGPA', 'Grad', 'GradEN', 'Last_GPA',
+       'Last_Col', 'Last_Maj', 'LastTerm', 'Total_Hours', 'DropOut',
+       'TookPlacement', 'Placement', 'ProbCalc', 'ProbPrecalc',
+       'TransferedOutOfENGR', 'TookAP_Calc_BC', 'TookAP_Calc_AB',
+       'LivesInState', 'HasLastGPA', 'HasHSGPA', 'HasHSRank', 'TookHSPhysics',
+       'TookHSCalc', 'TookACT', 'TookOldSAT', 'TookNewSAT']
+```{r}
+set.seed(42)  # For reproducibility
+train_indices <- sample(nrow(PrecolData), 0.8 * nrow(PrecolData))
+train_data <- PrecolData[train_indices, ]
+test_data <- PrecolData[-train_indices, ]
+
+# Create a decision tree classifier
+tree_model <- rpart(DropOut ~ . - DegMaj, data = train_data, method = "class")
+
+# Print the decision tree
+#print(tree_model)
+
+# Make predictions on the testing data
+predictions <- predict(tree_model, test_data, type = "class")
+
+# Calculate accuracy
+accuracy <- mean(predictions == test_data$DropOut)
+print(paste("Accuracy:", accuracy))
+```
+
+```{r}
+predictions
+```
+
